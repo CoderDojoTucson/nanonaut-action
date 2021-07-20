@@ -9,9 +9,18 @@ var image = new Image();
 image.src = 'images/Nanonaut.png';
 
 function start() {
-  c.fillStyle = 'green';
-  c.fillRect(10, 10, 30, 30);
-  c.drawImage(image, 20, 40);
+  window.requestAnimationFrame(loop);
+}
+
+var x = 0;
+var y = 40;
+
+function loop() {
+  c.clearRect(0, 0, 800, 600);
+  c.drawImage(image, x, y);
+  x = x + 1;
+
+  window.requestAnimationFrame(loop);
 }
 
 window.addEventListener('load', start);
