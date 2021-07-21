@@ -7,6 +7,7 @@ var NANONAUT_START_X = 50;
 var NANONAUT_START_Y = 40;
 var GROUND_Y = 540;
 var BACKGROUND_Y = -200;
+var NANONAUT_Y_ACCELERATION = 1;
 
 // SETUP
 var canvas = document.createElement('canvas');
@@ -22,8 +23,12 @@ nanonautImage.src = 'images/Nanonaut.png';
 var backgroundImage = new Image();
 backgroundImage.src = 'images/background.png';
 
+// Set Nanonaut starting location.
 var nanonautX = NANONAUT_START_X;
 var nanonautY = NANONAUT_START_Y;
+
+// Initial acceleration for Nanonaut.
+var nanonautYSpeed = 0;
 
 window.addEventListener('load', start);
 
@@ -42,7 +47,13 @@ function mainLoop() {
 
 // UPDATING
 function update() {
-
+  // Update Nanonaut location.
+  nanonautY = nanonautY + nanonautYSpeed;
+  nanonautYSpeed = nanonautYSpeed + NANONAUT_Y_ACCELERATION;
+  if (nanonautY > (GROUND_Y - NANONAUT_HEIGHT)) {
+    nanonautY = GROUND_Y - NANONAUT_HEIGHT;
+    nanonautYSpeed = 0;
+  }
 }
 
 // DRAWING
