@@ -5,9 +5,11 @@ var NANONAUT_WIDTH = 181;
 var NANONAUT_HEIGHT = 229;
 var NANONAUT_START_X = 50;
 var NANONAUT_START_Y = 40;
+var NANONAUT_Y_ACCELERATION = 1;
+var NANONAUT_JUMP_SPEED = 20;
 var GROUND_Y = 540;
 var BACKGROUND_Y = -200;
-var NANONAUT_Y_ACCELERATION = 1;
+var SPACE_KEYCODE = 32;
 
 // SETUP
 var canvas = document.createElement('canvas');
@@ -30,6 +32,10 @@ var nanonautY = NANONAUT_START_Y;
 // Initial acceleration for Nanonaut.
 var nanonautYSpeed = 0;
 
+// Define event listeners for player input.
+window.addEventListener('keydown', onKeyDown);
+window.addEventListener('keyup', onKeyUp);
+
 window.addEventListener('load', start);
 
 function start() {
@@ -44,15 +50,38 @@ function mainLoop() {
 }
 
 // PLAYER INPUT
+// Initialize space key pressed.
+var spaceKeyIsPressed = false;
+
+function onKeyDown(event) {
+  if (event.keyCode === SPACE_KEYCODE) {
+    spaceKeyIsPressed = true;
+  }
+}
+
+function onKeyUp(event) {
+  if(event.keyCode === SPACE_KEYCODE) {
+    spaceKeyIsPressed = false;
+  }
+}
 
 // UPDATING
+var nanonautIsInTheAir = false;
+
 function update() {
+  // Make Nanonaut jump.
+  if (spaceKeyIsPressed && !nanonautIsInTheAir) {
+    nanonautYSpeed = -NANONAUT_JUMP_SPEED;
+    nanonautIsInTheAir = true;
+  }
+
   // Update Nanonaut location.
   nanonautY = nanonautY + nanonautYSpeed;
   nanonautYSpeed = nanonautYSpeed + NANONAUT_Y_ACCELERATION;
   if (nanonautY > (GROUND_Y - NANONAUT_HEIGHT)) {
     nanonautY = GROUND_Y - NANONAUT_HEIGHT;
     nanonautYSpeed = 0;
+    nanonautIsInTheAir = false;
   }
 }
 
