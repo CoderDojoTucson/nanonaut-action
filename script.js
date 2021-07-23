@@ -7,8 +7,10 @@ var NANONAUT_START_X = 50;
 var NANONAUT_START_Y = 40;
 var NANONAUT_Y_ACCELERATION = 1;
 var NANONAUT_JUMP_SPEED = 20;
+var NANONAUT_X_SPEED = 5;
 var GROUND_Y = 540;
 var BACKGROUND_Y = -200;
+var BACKGROUND_WIDTH = 1000;
 var SPACE_KEYCODE = 32;
 
 // SETUP
@@ -31,6 +33,10 @@ var nanonautY = NANONAUT_START_Y;
 
 // Initial acceleration for Nanonaut.
 var nanonautYSpeed = 0;
+
+// Setup camera view.
+var cameraX = 0;
+var cameraY = 0;
 
 // Define event listeners for player input.
 window.addEventListener('keydown', onKeyDown);
@@ -69,6 +75,9 @@ function onKeyUp(event) {
 var nanonautIsInTheAir = false;
 
 function update() {
+  // Make Nanonaut run.
+  nanonautX = nanonautX + NANONAUT_X_SPEED;
+
   // Make Nanonaut jump.
   if (spaceKeyIsPressed && !nanonautIsInTheAir) {
     nanonautYSpeed = -NANONAUT_JUMP_SPEED;
@@ -83,6 +92,9 @@ function update() {
     nanonautYSpeed = 0;
     nanonautIsInTheAir = false;
   }
+
+  // Update camera location.
+  cameraX = nanonautX - 150;
 }
 
 // DRAWING
@@ -92,7 +104,9 @@ function draw() {
   c.fillRect(0, 0, CANVAS_WIDTH, GROUND_Y - 40);
 
   // Draw the background.
-  c.drawImage(backgroundImage, 0, BACKGROUND_Y);
+  var backgroundX = - (cameraX % BACKGROUND_WIDTH);
+  c.drawImage(backgroundImage, backgroundX, BACKGROUND_Y);
+  c.drawImage(backgroundImage, backgroundX + BACKGROUND_WIDTH, BACKGROUND_Y);
 
   // Draw the ground.
   c.fillStyle = 'ForestGreen';
@@ -100,5 +114,5 @@ function draw() {
              CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y + 40);
 
   // Draw the Nanonaut.
-  c.drawImage(nanonautImage, nanonautX, nanonautY);
+  c.drawImage(nanonautImage, nanonautX - cameraX, nanonautY - cameraY);
 }
