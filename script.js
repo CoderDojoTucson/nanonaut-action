@@ -8,6 +8,9 @@ var NANONAUT_START_Y = 40;
 var NANONAUT_Y_ACCELERATION = 1;
 var NANONAUT_JUMP_SPEED = 20;
 var NANONAUT_X_SPEED = 5;
+var NANONAUT_NR_FRAMES_PER_ROW = 5;
+var NANONAUT_NR_ANIMATION_FRAMES = 7;
+var NANONAUT_ANIMATION_SPEED = 4;
 var GROUND_Y = 540;
 var BACKGROUND_Y = -200;
 var BACKGROUND_WIDTH = 1000;
@@ -21,7 +24,7 @@ canvas.height = CANVAS_HEIGHT;
 document.body.appendChild(canvas);
 
 var nanonautImage = new Image();
-nanonautImage.src = 'images/Nanonaut.png';
+nanonautImage.src = 'images/animatedNanonaut.png';
 
 // Define background image.
 var backgroundImage = new Image();
@@ -33,6 +36,10 @@ var nanonautY = NANONAUT_START_Y;
 
 // Initial acceleration for Nanonaut.
 var nanonautYSpeed = 0;
+
+// Initial Nanonaut spritesheet frame.
+var nanonautFrameNr = 0;
+var gameFrameCounter = 0;
 
 // Setup camera view.
 var cameraX = 0;
@@ -93,6 +100,16 @@ function update() {
     nanonautIsInTheAir = false;
   }
 
+
+  // Update sprite animation.
+  gameFrameCounter = gameFrameCounter + 1;
+  if (gameFrameCounter % NANONAUT_ANIMATION_SPEED === 0) {
+    nanonautFrameNr = nanonautFrameNr + 1;
+    if (nanonautFrameNr >= NANONAUT_NR_ANIMATION_FRAMES) {
+      nanonautFrameNr = 0;
+    }
+  }
+
   // Update camera location.
   cameraX = nanonautX - 150;
 }
@@ -104,7 +121,7 @@ function draw() {
   c.fillRect(0, 0, CANVAS_WIDTH, GROUND_Y - 40);
 
   // Draw the background.
-  var backgroundX = - (cameraX % BACKGROUND_WIDTH);
+  let backgroundX = - (cameraX % BACKGROUND_WIDTH);
   c.drawImage(backgroundImage, backgroundX, BACKGROUND_Y);
   c.drawImage(backgroundImage, backgroundX + BACKGROUND_WIDTH, BACKGROUND_Y);
 
@@ -114,5 +131,9 @@ function draw() {
              CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y + 40);
 
   // Draw the Nanonaut.
-  c.drawImage(nanonautImage, nanonautX - cameraX, nanonautY - cameraY);
+  let nanonautSpriteSheetRow = Math.floor(nanonautFrameNr / NANONAUT_NR_FRAMES_PER_ROW);
+  let nanonautSpriteSheetColumn = nanonautFrameNr % NANONAUT_NR_FRAMES_PER_ROW;
+  let nanonautSpriteSheetX = nanonautSpriteSheetColumn * NANONAUT_WIDTH;
+  let nanonautSpriteSheetY = nanonautSpriteSheetRow * NANONAUT_HEIGHT;
+  c.drawImage(nanonautImage, nanonautSpriteSheetX, nanonautSpriteSheetY, NANONAUT_WIDTH, NANONAUT_HEIGHT, nanonautX - cameraX, nanonautY - cameraY, NANONAUT_WIDTH, NANONAUT_HEIGHT);
 }
