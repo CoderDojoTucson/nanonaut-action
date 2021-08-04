@@ -11,6 +11,7 @@ var NANONAUT_X_SPEED = 5;
 var NANONAUT_NR_FRAMES_PER_ROW = 5;
 var NANONAUT_NR_ANIMATION_FRAMES = 7;
 var NANONAUT_ANIMATION_SPEED = 4;
+var BUSH_X_OFFSET = 150;
 var GROUND_Y = 540;
 var BACKGROUND_Y = -200;
 var BACKGROUND_WIDTH = 1000;
@@ -23,12 +24,22 @@ canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 document.body.appendChild(canvas);
 
-var nanonautImage = new Image();
-nanonautImage.src = 'images/animatedNanonaut.png';
-
 // Define background image.
 var backgroundImage = new Image();
 backgroundImage.src = 'images/background.png';
+
+// Define bush images.
+var bush1Image = new Image();
+bush1Image.src = 'images/bush1.png';
+var bush2Image = new Image();
+bush2Image.src = 'images/bush2.png';
+
+// Initialize bush objects.
+var bushData = generateBushes();
+
+// Define Nanonaut image.
+var nanonautImage = new Image();
+nanonautImage.src = 'images/animatedNanonaut.png';
 
 // Set Nanonaut starting location.
 var nanonautX = NANONAUT_START_X;
@@ -53,6 +64,26 @@ window.addEventListener('load', start);
 
 function start() {
   window.requestAnimationFrame(mainLoop);
+}
+
+function generateBushes() {
+  let generatedBushData = [];
+  let bushX = 0;
+  while (bushX < (2 * CANVAS_WIDTH)) {
+    let bushImage;
+    if (Math.random() >= 0.5) {
+      bushImage = bush1Image;
+    } else {
+      bushImage = bush2Image;
+    }
+    generatedBushData.push({
+      x: bushX,
+      y: 80 + Math.random() * 20,
+      image: bushImage
+    });
+    bushX += 150 + Math.random() * 200;
+  }
+  return generatedBushData;
 }
 
 // MAIN LOOP
@@ -100,7 +131,6 @@ function update() {
     nanonautIsInTheAir = false;
   }
 
-
   // Update sprite animation.
   gameFrameCounter = gameFrameCounter + 1;
   if (gameFrameCounter % NANONAUT_ANIMATION_SPEED === 0) {
@@ -112,6 +142,13 @@ function update() {
 
   // Update camera location.
   cameraX = nanonautX - 150;
+
+  // Update bush locations.
+  for (let i = 0; i < bushData.length; i++) {
+    if ((bushData[i].x - cameraX) < -CANVAS_WIDTH) {
+      bushData[i].x += (2 * CANVAS_WIDTH) + BUSH_X_OFFSET;
+    }
+  }
 }
 
 // DRAWING
@@ -129,6 +166,11 @@ function draw() {
   c.fillStyle = 'ForestGreen';
   c.fillRect(0, GROUND_Y - 40, 
              CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y + 40);
+
+  // Draw bushes.
+  for (let i = 0; i < bushData.length; i++) {
+    c.drawImage(bushData[i].image, bushData[i].x - cameraX, GROUND_Y - bushData[i].y - cameraY);
+  }
 
   // Draw the Nanonaut.
   let nanonautSpriteSheetRow = Math.floor(nanonautFrameNr / NANONAUT_NR_FRAMES_PER_ROW);
